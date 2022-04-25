@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Inbox</string>
+    <string name="title_activity_conversation">ConversationActivity</string>
+    <!-- Strings used for fragments for navigation -->
+</resources>

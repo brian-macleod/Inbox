@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Development/Projects/Apps/TextingApp/app/src/main/res/drawable/edittext_outline.xml" value="0.271" />
+        <entry key="..\:/Development/Projects/Apps/TextingApp/app/src/main/res/drawable/edittext_rounded.xml" value="0.3645" />
+        <entry key="..\:/Development/Projects/Apps/TextingApp/app/src/main/res/drawable/edittext_rounded_border.xml.xml" value="0.3645" />
+        <entry key="..\:/Development/Projects/Apps/TextingApp/app/src/main/res/drawable/imagebutton_rounded.xml" value="0.3565" />
+        <entry key="..\:/Development/Projects/Apps/TextingApp/app/src/main/res/layout/activity_conversation.xml" value="0.33" />
+        <entry key="..\:/Development/Projects/Apps/TextingApp/app/src/main/res/layout/activity_inbox.xml" value="0.33" />
+        <entry key="..\:/Development/Projects/Apps/TextingApp/app/src/main/res/layout/activity_main.xml" value="0.5380434782608695" />
+        <entry key="..\:/Development/Projects/Apps/TextingApp/app/src/main/res/layout/conversation.xml" value="0.5401041666666667" />
+        <entry key="..\:/Development/Projects/Apps/TextingApp/app/src/main/res/layout/fragment_first.xml" value="0.31354166666666666" />
+        <entry key="..\:/Development/Projects/Apps/TextingApp/app/src/main/res/layout/fragment_second.xml" value="0.31354166666666666" />
+        <entry key="..\:/Development/Projects/Apps/TextingApp/app/src/main/res/layout/inbox.xml" value="0.3087179487179487" />
+        <entry key="..\:/Development/Projects/Apps/TextingApp/app/src/main/res/layout/inbox_item.xml" value="0.3087179487179487" />
+        <entry key="..\:/Development/Projects/Apps/TextingApp/app/src/main/res/layout/layout.xml" value="0.3411458333333333" />
+        <entry key="..\:/Development/Projects/Apps/TextingApp/app/src/main/res/layout/row_conversation_item.xml" value="0.25" />
+        <entry key="..\:/Development/Projects/Apps/TextingApp/app/src/main/res/layout/row_inbox_item.xml" value="0.8052631578947368" />
+        <entry key="..\:/Development/Projects/Apps/TextingApp/app/src/main/res/layout/slide_in_left.xml" value="0.40625" />
+        <entry key="..\:/Development/Projects/Apps/TextingApp/app/src/main/res/layout/test_layout.xml" value="0.67" />
+        <entry key="..\:/Development/Projects/Apps/inbox/app/src/main/res/layout/activity_conversation.xml" value="0.40625" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
