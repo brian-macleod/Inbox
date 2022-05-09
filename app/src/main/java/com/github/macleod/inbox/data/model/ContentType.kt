@@ -1,30 +1,31 @@
 package com.github.macleod.inbox.data.model
 
-enum class ContentType
+enum class ContentType(val prefix: String?)
 {
-    AUDIO,
-    IMAGE,
-    TEXT,
-    UNKNOWN,
-    VIDEO;
+    AUDIO("audio"),
+    IMAGE("image"),
+    TEXT("text/plain"),
+    UNKNOWN(null),
+    VIDEO("video");
 
     companion object
     {
-        private const val AUDIO_PREFIX = "audio"
-        private const val IMAGE_PREFIX = "image"
-        private const val TEXT_PREFIX  = "text/plain"
-        private const val VIDEO_PREFIX = "video"
-
+        /**
+         * Get content type from MIME type
+         *
+         * @param mimeType
+         * @return
+         */
         fun getContentTypeFromMIMEType(mimeType: String): ContentType
         {
             return with (mimeType)
             {
                 when
                 {
-                    startsWith(AUDIO_PREFIX, ignoreCase = true) -> AUDIO
-                    startsWith(IMAGE_PREFIX, ignoreCase = true) -> IMAGE
-                    startsWith(TEXT_PREFIX, ignoreCase = true) -> TEXT
-                    startsWith(VIDEO_PREFIX, ignoreCase = true) -> VIDEO
+                    startsWith(AUDIO.prefix!!, ignoreCase = true) -> AUDIO
+                    startsWith(IMAGE.prefix!!, ignoreCase = true) -> IMAGE
+                    startsWith(TEXT.prefix!!, ignoreCase = true) -> TEXT
+                    startsWith(VIDEO.prefix!!, ignoreCase = true) -> VIDEO
                     else -> UNKNOWN
                 }
             }

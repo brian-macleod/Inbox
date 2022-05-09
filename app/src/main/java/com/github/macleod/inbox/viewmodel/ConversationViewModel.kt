@@ -11,9 +11,9 @@ import com.github.macleod.inbox.data.repository.ThreadRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class ConversationViewModel(private val threadRepository: ThreadRepository,
-                            private val contactRepository: ContactRepository,
-                            private val messageRepository: MessageRepository
+class ConversationViewModel private constructor (private val threadRepository: ThreadRepository,
+                                                 private val contactRepository: ContactRepository,
+                                                 private val messageRepository: MessageRepository
 ): ViewModel()
 {
     class Factory(private val threadRepository: ThreadRepository,

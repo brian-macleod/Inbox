@@ -1,6 +1,7 @@
 package com.github.macleod.inbox.activity
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
@@ -13,12 +14,14 @@ import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.github.macleod.inbox.R
+import com.github.macleod.inbox.adapter.ConversationAdapter
+import com.github.macleod.inbox.data.model.Contact
+import com.github.macleod.inbox.data.model.Conversation
+import com.github.macleod.inbox.data.model.ImageAttachment
+import com.github.macleod.inbox.data.model.MMSMessage
 import com.github.macleod.inbox.data.repository.ContactRepository
 import com.github.macleod.inbox.data.repository.MessageRepository
 import com.github.macleod.inbox.data.repository.ThreadRepository
-import com.github.macleod.inbox.data.model.Contact
-import com.github.macleod.inbox.data.model.Conversation
-import com.github.macleod.inbox.adapter.ConversationAdapter
 import com.github.macleod.inbox.viewmodel.ConversationViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -38,6 +41,8 @@ class ConversationActivity : AppCompatActivity()
 
     private val messageTextItem: EditText by lazy { findViewById<EditText>(R.id.conversation_message_text_item) }
     private val sendButton: ImageButton by lazy { findViewById<ImageButton>(R.id.conversation_send_button) }
+    private var conversationID: Long = -1
+    private lateinit var conversationAdapter: ConversationAdapter
 
     /**
      * On create
@@ -49,15 +54,15 @@ class ConversationActivity : AppCompatActivity()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_conversation)
 
-        bindHandlers()
-
-        val conversationID = intent.getLongExtra(EXTRA_CONVERSATION_ID, -1)
+        conversationID = intent.getLongExtra(EXTRA_CONVERSATION_ID, -1)
         val contacts = intent.getSerializableExtra(EXTRA_CONVERSATION_CONTACTS) as List<Contact>
 
         if (conversationID > 0)
         {
             populateView(conversationID, contacts)
         }
+
+        bindHandlers()
     }
 
     /**
@@ -110,9 +115,23 @@ class ConversationActivity : AppCompatActivity()
          * Send Button Clicked
          */
         sendButton.setOnClickListener {
-            Log.i("InboxActivity", "SEND CLICKED!!!!!!! --> " + System.currentTimeMillis())
+            Log.i("MainActivity", "SEND CLICKED!!!!!!! --> " + System.currentTimeMillis()) // TODO:
             messageTextItem.text.clear()
             closeKeyboard()
+        }
+
+        /*
+         * Message Clicked
+         */
+        conversationAdapter.onItemClick = { message, offset ->
+            if (message is MMSMessage)
+            {
+                val attachment = message.attachments[offset]
+                if (attachment is ImageAttachment)
+                {
+                    startImageActivity(attachment.id)
+                }
+            }
         }
     }
 
@@ -142,6 +161,21 @@ class ConversationActivity : AppCompatActivity()
     }
 
     /**
+     * Start image activity
+     *
+     * @param partID
+     */
+    private fun startImageActivity(partID: Long)
+    {
+        val intent = Intent(this, ImageActivity::class.java).apply {
+            putExtra(ImageActivity.EXTRA_CONVERSATION_ID, conversationID)
+            putExtra(ImageActivity.EXTRA_PART_ID, partID)
+        }
+        startActivity(intent)
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+    }
+
+    /**
      * Populate view
      *
      * @param conversationID
@@ -152,11 +186,10 @@ class ConversationActivity : AppCompatActivity()
         val threadRepository = ThreadRepository()
         val contactRepository = ContactRepository()
         val messageRepository = MessageRepository()
-        val viewModelFactory =
-            ConversationViewModel.Factory(threadRepository, contactRepository, messageRepository)
+        val viewModelFactory = ConversationViewModel.Factory(threadRepository, contactRepository, messageRepository)
         val viewModel = ViewModelProvider(this, viewModelFactory).get(ConversationViewModel::class.java)
 
-        val conversationAdapter = ConversationAdapter(conversationID, contacts)
+        conversationAdapter = ConversationAdapter(conversationID, contacts)
 
         setSupportActionBar(findViewById(R.id.conversation_toolbar))
         supportActionBar?.title = Conversation.getParticipantLabel(contacts)

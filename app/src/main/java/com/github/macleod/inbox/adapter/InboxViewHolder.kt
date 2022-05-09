@@ -6,14 +6,8 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.recyclerview.widget.RecyclerView
 import com.github.macleod.inbox.R
-import com.github.macleod.inbox.data.model.MMSMessage
-import com.github.macleod.inbox.data.model.Message
-import com.github.macleod.inbox.data.model.SMSMessage
-import com.github.macleod.inbox.data.model.Conversation
-import com.github.macleod.inbox.data.model.ImageAttachment
-import com.github.macleod.inbox.data.model.TextAttachment
+import com.github.macleod.inbox.data.model.*
 
 /**
  * Inbox view holder
@@ -22,7 +16,7 @@ import com.github.macleod.inbox.data.model.TextAttachment
  *
  * @param view
  */
-class InboxViewHolder(view: View): RecyclerView.ViewHolder(view)
+class InboxViewHolder(view: View): ViewHolder<Conversation?>(view)
 {
     private val participantsLabel: TextView = view.findViewById(R.id.inbox_item_participants_label)
     private val dateLabel: TextView = view.findViewById(R.id.inbox_item_date_label)
@@ -33,11 +27,11 @@ class InboxViewHolder(view: View): RecyclerView.ViewHolder(view)
     /**
      * Bind
      *
-     * @param conversation
+     * @param item
      */
-    fun bind(conversation: Conversation?)
+    override fun bind(item: Conversation?)
     {
-        if (conversation == null)
+        if (item == null)
         {
             // TODO: Show a loading spinner
             snippetLabel.text = "[TODO: Loading Spinner]"
@@ -45,10 +39,10 @@ class InboxViewHolder(view: View): RecyclerView.ViewHolder(view)
         else
         {
             val dateFormat = SimpleDateFormat("MM/dd/yy")
-            participantsLabel.text = conversation.getParticipantLabel()
-            dateLabel.text = dateFormat.format(conversation.date)
+            participantsLabel.text = item.getParticipantLabel()
+            dateLabel.text = dateFormat.format(item.date)
 
-            setSnippet(conversation.lastMessage)
+            setSnippet(item.lastMessage)
         }
     }
 

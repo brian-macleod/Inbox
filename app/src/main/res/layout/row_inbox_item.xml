@@ -64,9 +64,8 @@
             <ImageView
                 android:id="@+id/inbox_item_snippet_thumbnail"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:scaleType="centerInside"
-                android:adjustViewBounds="true" />
+                android:layout_height="100dp"
+                android:scaleType="centerCrop" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

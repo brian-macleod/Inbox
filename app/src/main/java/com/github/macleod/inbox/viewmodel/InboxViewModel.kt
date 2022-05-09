@@ -13,9 +13,9 @@ import com.github.macleod.inbox.data.model.Conversation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class InboxViewModel(private val threadRepository: ThreadRepository,
-                     private val messageRepository: MessageRepository,
-                     private val contactRepository: ContactRepository
+class InboxViewModel private constructor(private val threadRepository: ThreadRepository,
+                                         private val messageRepository: MessageRepository,
+                                         private val contactRepository: ContactRepository
 ): ViewModel()
 {
     /**
@@ -28,8 +28,7 @@ class InboxViewModel(private val threadRepository: ThreadRepository,
      */
     class Factory(private val threadRepository: ThreadRepository,
                   private val messageRepository: MessageRepository,
-                  private val contactRepository: ContactRepository
-    ): ViewModelProvider.Factory
+                  private val contactRepository: ContactRepository): ViewModelProvider.Factory
     {
         /**
          * Creates a new instance of the given `Class`.

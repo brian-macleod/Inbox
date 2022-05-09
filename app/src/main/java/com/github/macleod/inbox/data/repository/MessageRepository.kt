@@ -1,15 +1,14 @@
 package com.github.macleod.inbox.data.repository
 
+import android.graphics.Bitmap
+import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.github.macleod.inbox.data.model.MMSMessage
-import com.github.macleod.inbox.data.model.Message
-import com.github.macleod.inbox.data.model.MessageData
-import com.github.macleod.inbox.data.model.SMSMessage
+import com.github.macleod.inbox.data.model.*
+import com.github.macleod.inbox.data.source.*
 import com.github.macleod.inbox.data.source.ContactDataSource
 import com.github.macleod.inbox.data.source.MMSDataSource
-import com.github.macleod.inbox.data.source.MessagePagingSource
 import com.github.macleod.inbox.data.source.SMSDataSource
 import kotlinx.coroutines.flow.Flow
 
@@ -64,6 +63,42 @@ class MessageRepository
         {
             null
         }
+    }
+
+    /**
+     * Get image IDs
+     *
+     * @param threadID
+     * @return
+     */
+    suspend fun getImageIDs(threadID: Long): LongArray
+    {
+        val mmsDataSource = MMSDataSource()
+
+        val messageIDPairs = mmsDataSource.getMessageIDs(threadID)
+        val messageIDs = messageIDPairs.map { it.first }
+
+        return mmsDataSource.getPartsForMessages(ContentType.IMAGE, *messageIDs.toLongArray())
+    }
+
+    /**
+     * Get images
+     *
+     * @param partIDs
+     * @param startingIndex
+     * @return
+     */
+    suspend fun getImages(partIDs: LongArray, startingIndex: Int): Flow<PagingData<Bitmap>>
+    {
+        val config = PagingConfig(pageSize = ImagePagingSource.PAGE_SIZE,
+                                  initialLoadSize = ImagePagingSource.INITIAL_LOAD_SIZE,
+                                  prefetchDistance = ImagePagingSource.PREFETCH_DISTANCE,
+                                  enablePlaceholders = false)
+        val pager = Pager(
+            config = config,
+            pagingSourceFactory = { ImagePagingSource(partIDs, startingIndex) }
+        )
+        return pager.flow
     }
 
     /**

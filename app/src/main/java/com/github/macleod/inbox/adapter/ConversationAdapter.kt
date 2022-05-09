@@ -13,10 +13,10 @@ import com.github.macleod.inbox.data.model.Contact
  * @property contacts
  * @constructor Create empty Conversation adapter
  */
-class ConversationAdapter(private val conversationID: Long, private val contacts: List<Contact>): PagingDataAdapter<Message, ConversationViewHolder>(
-    MESSAGE_COMPARATOR
-)
+class ConversationAdapter(private val conversationID: Long, private val contacts: List<Contact>): PagingDataAdapter<Message, ConversationViewHolder>(MESSAGE_COMPARATOR)
 {
+    var onItemClick: ((Message, Int) -> Unit)? = null
+
     /**
      * Companion
      *
@@ -106,7 +106,16 @@ class ConversationAdapter(private val conversationID: Long, private val contacts
      */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ConversationViewHolder
     {
-        return ConversationViewHolder.create(parent.context, contacts.size)
+        val viewHolder = ConversationViewHolder.create(parent.context, contacts.size)
+        viewHolder.onRowClick = { row ->
+            val position = viewHolder.bindingAdapterPosition
+            val message = getItem(position)
+            if (message != null)
+            {
+                onItemClick?.invoke(message, row.index)
+            }
+        }
+        return viewHolder
     }
 
     /**

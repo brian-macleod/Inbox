@@ -11,17 +11,12 @@ import android.widget.LinearLayout
 import android.widget.Space
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.recyclerview.widget.RecyclerView
 import com.github.macleod.inbox.R
-import com.github.macleod.inbox.data.model.MMSMessage
-import com.github.macleod.inbox.data.model.Message
-import com.github.macleod.inbox.data.model.SMSMessage
-import com.github.macleod.inbox.data.model.ImageAttachment
-import com.github.macleod.inbox.data.model.MessageType
-import com.github.macleod.inbox.data.model.TextAttachment
+import com.github.macleod.inbox.data.model.*
 
-class ConversationViewHolder private constructor(private val layout: ViewGroup, private val numParticipants: Int): RecyclerView.ViewHolder(layout)
+class ConversationViewHolder private constructor(private val layout: ViewGroup, private val numParticipants: Int): ViewHolder<Message?>(layout)
 {
+    var onRowClick: ((Row) -> Unit)? = null
     private val rowList = ArrayList<Row>()
 
     /**
@@ -60,16 +55,16 @@ class ConversationViewHolder private constructor(private val layout: ViewGroup, 
      *
      * @param parent
      */
-    internal inner class Row(parent: View) // TODO: Clean this up
+    inner class Row(val index: Int, parent: View) // TODO: Clean this up
     {
-        val layout: LinearLayout        = parent.findViewById(R.id.conversation_item_layout)
-        val avatarHolder: CardView      = parent.findViewById(R.id.conversation_item_avatar_holder)
-        val contentLayout: LinearLayout = parent.findViewById(R.id.conversation_item_content_layout)
-        val messageBubble: CardView = parent.findViewById(R.id.conversation_item_message_bubble)
-        val addressLabel: TextView      = parent.findViewById(R.id.conversation_item_address_label)
-        val messageText: TextView       = parent.findViewById(R.id.conversation_item_message_text)
-        val messageImage: ImageView = parent.findViewById(R.id.conversation_item_message_image)
-        val spacer: Space = parent.findViewById(R.id.conversation_item_spacer)
+        internal val layout: LinearLayout        = parent.findViewById(R.id.conversation_item_layout)
+        internal val avatarHolder: CardView      = parent.findViewById(R.id.conversation_item_avatar_holder)
+        internal val contentLayout: LinearLayout = parent.findViewById(R.id.conversation_item_content_layout)
+        internal val messageBubble: CardView = parent.findViewById(R.id.conversation_item_message_bubble)
+        internal val addressLabel: TextView      = parent.findViewById(R.id.conversation_item_address_label)
+        internal val messageText: TextView       = parent.findViewById(R.id.conversation_item_message_text)
+        internal val messageImage: ImageView = parent.findViewById(R.id.conversation_item_message_image)
+        internal val spacer: Space = parent.findViewById(R.id.conversation_item_spacer)
     }
 
     /**
@@ -77,28 +72,34 @@ class ConversationViewHolder private constructor(private val layout: ViewGroup, 
      *
      * @return
      */
-    private fun createRow(): Row
+    private fun createRow(index: Int): Row
     {
         val context = itemView.context
         val inflater = LayoutInflater.from(context)
         val messageView = inflater.inflate(R.layout.row_conversation_item, layout, false)
-        return Row(messageView)
+
+        val row = Row(index, messageView)
+        row.layout.setOnClickListener {
+            onRowClick?.invoke(row)
+        }
+
+        return row
     }
 
     /**
      * Bind
      *
-     * @param message
+     * @param item
      */
-    fun bind(message: Message?)
+    override fun bind(item: Message?)
     {
-        if (message is SMSMessage)
+        if (item is SMSMessage)
         {
-            setSMSMessage(message)
+            setSMSMessage(item)
         }
         else
         {
-            setMMSMessage(message as MMSMessage)
+            setMMSMessage(item as MMSMessage)
         }
     }
 
@@ -110,7 +111,7 @@ class ConversationViewHolder private constructor(private val layout: ViewGroup, 
     private fun setSMSMessage(message: SMSMessage)
     {
         layout.removeAllViewsInLayout()
-        val row = if (rowList.isEmpty()) createRow() else rowList[0]
+        val row = if (rowList.isEmpty()) createRow(rowList.size) else rowList[0]
         if (rowList.isEmpty())
         {
             rowList.add(row)
@@ -136,7 +137,7 @@ class ConversationViewHolder private constructor(private val layout: ViewGroup, 
         layout.removeAllViewsInLayout()
         for ((rowNum, attachment) in message.attachments.withIndex())
         {
-            val row = if (rowList.size > rowNum) rowList[rowNum] else createRow()
+            val row = if (rowList.size > rowNum) rowList[rowNum] else createRow(rowList.size)
             if (rowNum >= rowList.size)
             {
                 rowList.add(row)

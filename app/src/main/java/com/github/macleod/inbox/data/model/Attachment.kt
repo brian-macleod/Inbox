@@ -1,5 +1,5 @@
 package com.github.macleod.inbox.data.model
 
-interface Attachment
+abstract class Attachment(val id: Long)
 {
 }

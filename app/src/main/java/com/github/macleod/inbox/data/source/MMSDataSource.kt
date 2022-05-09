@@ -59,6 +59,65 @@ internal class MMSDataSource: MessageDataSource<MMSMessageData>
     }
 
     /**
+     * Get parts for messages
+     *
+     * @param contentType
+     * @param messageIDs
+     * @return
+     */
+    suspend fun getPartsForMessages(contentType: ContentType, vararg messageIDs: Long): LongArray
+    {
+        val projection = arrayOf(Mms.Part._ID)
+        val selectionArgList = mutableListOf<String>()
+
+        val inListBuilder = StringBuilder()
+        var i = 0
+        val maxNumArgs = 998
+        while (i < messageIDs.size && i < maxNumArgs)
+        {
+            if (inListBuilder.isNotEmpty())
+            {
+                inListBuilder.append(", ")
+            }
+            inListBuilder.append("?")
+
+            val id = messageIDs[i++]
+            selectionArgList.add(id.toString())
+        }
+
+        selectionArgList.add(contentType.prefix!!) // TODO: Add logic here to account for UNKNOWN content types
+
+        val selection = "${Mms.Part.MSG_ID} IN (" + inListBuilder.toString() + ") AND " +
+                        "UPPER(${Mms.Part.CONTENT_TYPE}) LIKE UPPER(? || '%')"
+        val selectionArgs = selectionArgList.toTypedArray()
+        val sortOrder = Mms.Part.SEQ + " DESC"
+
+        val partIDList = mutableListOf<Long>()
+
+        val contentResolver = getContentResolver()
+        contentResolver.query(Mms.Part.CONTENT_URI, projection, selection, selectionArgs, sortOrder)?.use { cursor ->
+            val partIDIndex = cursor.getColumnIndex(Mms.Part._ID)
+
+            while (cursor.moveToNext())
+            {
+                val partID = cursor.getLong(partIDIndex)
+                partIDList.add(partID)
+            }
+        }
+
+        var ret = partIDList.toLongArray()
+        if (messageIDs.size > maxNumArgs)
+        {
+            var tmpIDList = messageIDs.asList()
+            tmpIDList = tmpIDList.subList(maxNumArgs, tmpIDList.size)
+            val additionalPartIDs = getPartsForMessages(contentType, *tmpIDList.toLongArray())
+            ret = additionalPartIDs.plus(ret)
+        }
+
+        return ret
+    }
+
+    /**
      * Get message descriptors
      *
      * @param threadID
@@ -239,18 +298,18 @@ internal class MMSDataSource: MessageDataSource<MMSMessageData>
                     {
                         ContentType.AUDIO ->
                         {
-                            TextAttachment("[Audio Attachment]") // TODO:
+                            TextAttachment(partID, "[Audio Attachment]") // TODO:
                         }
                         ContentType.IMAGE ->
                         {
                             val image = getMMSImageThumbnail(partID)
                             if (image != null)
                             {
-                                ImageAttachment(image)
+                                ImageAttachment(partID, image)
                             }
                             else
                             {
-                                TextAttachment("[ERROR]") // TODO:
+                                TextAttachment(partID, "[ERROR]") // TODO:
                             }
                         }
                         ContentType.TEXT ->
@@ -260,11 +319,11 @@ internal class MMSDataSource: MessageDataSource<MMSMessageData>
                             {
                                 text = getMMSText(partID)
                             }
-                            TextAttachment(text)
+                            TextAttachment(partID, text)
                         }
                         ContentType.VIDEO ->
                         {
-                            TextAttachment("[Video Attachment]") // TODO:
+                            TextAttachment(partID, "[Video Attachment]") // TODO:
                         }
                         else -> continue
                     }

@@ -1,23 +1,14 @@
 package com.github.macleod.inbox.adapter
 
+import android.graphics.Bitmap
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.RecyclerView
 import com.github.macleod.inbox.R
-import com.github.macleod.inbox.data.model.Conversation
 
-/**
- * Inbox adapter
- *
- * @constructor Create empty Inbox adapter
- */
-internal class InboxAdapter: PagingDataAdapter<Conversation, InboxViewHolder>(CONVERSATION_COMPARATOR)
+class ImageAdapter: PagingDataAdapter<Bitmap, ImageViewHolder>(IMAGE_COMPARATOR)
 {
-    var onItemClick: ((Conversation) -> Unit)? = null
-
     /**
      * Companion
      *
@@ -25,7 +16,7 @@ internal class InboxAdapter: PagingDataAdapter<Conversation, InboxViewHolder>(CO
      */
     companion object
     {
-        private val CONVERSATION_COMPARATOR = object: DiffUtil.ItemCallback<Conversation>()
+        private val IMAGE_COMPARATOR = object: DiffUtil.ItemCallback<Bitmap>()
         {
             /**
              * Called to check whether two objects represent the same item.
@@ -43,9 +34,9 @@ internal class InboxAdapter: PagingDataAdapter<Conversation, InboxViewHolder>(CO
              * @return True if the two items represent the same object or false if they are different.
              * @see Callback.areItemsTheSame
              */
-            override fun areItemsTheSame(oldItem: Conversation, newItem: Conversation): Boolean
+            override fun areItemsTheSame(oldItem: Bitmap, newItem: Bitmap): Boolean
             {
-                return oldItem.id == newItem.id
+                return oldItem.sameAs(newItem)
             }
 
             /**
@@ -76,10 +67,11 @@ internal class InboxAdapter: PagingDataAdapter<Conversation, InboxViewHolder>(CO
              * @return True if the contents of the items are the same or false if they are different.
              * @see Callback.areContentsTheSame
              */
-            override fun areContentsTheSame(oldItem: Conversation, newItem: Conversation): Boolean
+            override fun areContentsTheSame(oldItem: Bitmap, newItem: Bitmap): Boolean
             {
-                return oldItem == newItem
+                return oldItem.sameAs(newItem)
             }
+
         }
     }
 
@@ -105,22 +97,11 @@ internal class InboxAdapter: PagingDataAdapter<Conversation, InboxViewHolder>(CO
      * @see .getItemViewType
      * @see .onBindViewHolder
      */
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InboxViewHolder
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder
     {
         val inflater = LayoutInflater.from(parent.context)
-        val inboxItem = inflater.inflate(R.layout.row_inbox_item, parent, false)
-        val inboxViewHolder = InboxViewHolder(inboxItem)
-
-        inboxViewHolder.itemView.setOnClickListener {
-            val position = inboxViewHolder.bindingAdapterPosition
-            val conversation = getItem(position)
-            if (conversation != null)
-            {
-                onItemClick?.invoke(conversation)
-            }
-        }
-
-        return inboxViewHolder
+        val imageItem = inflater.inflate(R.layout.row_image_item, parent, false)
+        return ImageViewHolder(imageItem)
     }
 
     /**
@@ -144,9 +125,9 @@ internal class InboxAdapter: PagingDataAdapter<Conversation, InboxViewHolder>(CO
      * item at the given position in the data set.
      * @param position The position of the item within the adapter's data set.
      */
-    override fun onBindViewHolder(holder: InboxViewHolder, position: Int)
+    override fun onBindViewHolder(holder: ImageViewHolder, position: Int)
     {
-        val conversation = getItem(position)
-        holder.bind(conversation)
+        val bitmap = getItem(position)
+        holder.bind(bitmap)
     }
 }
