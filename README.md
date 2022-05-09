@@ -1,1 +1,2 @@
-# inbox
+# Inbox
+Coming soon!
