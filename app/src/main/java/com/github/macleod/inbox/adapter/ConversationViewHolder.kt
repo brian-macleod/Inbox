@@ -58,13 +58,13 @@ class ConversationViewHolder private constructor(private val layout: ViewGroup, 
     inner class Row(val index: Int, parent: View) // TODO: Clean this up
     {
         internal val layout: LinearLayout        = parent.findViewById(R.id.conversation_item_layout)
-        internal val avatarHolder: CardView      = parent.findViewById(R.id.conversation_item_avatar_holder)
+        internal val avatarLabel: TextView       = parent.findViewById(R.id.conversation_item_avatar_label)
         internal val contentLayout: LinearLayout = parent.findViewById(R.id.conversation_item_content_layout)
-        internal val messageBubble: CardView = parent.findViewById(R.id.conversation_item_message_bubble)
+        internal val messageBubble: CardView     = parent.findViewById(R.id.conversation_item_message_bubble)
         internal val addressLabel: TextView      = parent.findViewById(R.id.conversation_item_address_label)
         internal val messageText: TextView       = parent.findViewById(R.id.conversation_item_message_text)
-        internal val messageImage: ImageView = parent.findViewById(R.id.conversation_item_message_image)
-        internal val spacer: Space = parent.findViewById(R.id.conversation_item_spacer)
+        internal val messageImage: ImageView     = parent.findViewById(R.id.conversation_item_message_image)
+        internal val spacer: Space               = parent.findViewById(R.id.conversation_item_spacer)
     }
 
     /**
@@ -148,6 +148,7 @@ class ConversationViewHolder private constructor(private val layout: ViewGroup, 
 
             val contact = message.contact
             row.addressLabel.text = if (contact != null) contact.displayName else message.address
+            row.avatarLabel.text = contact?.getInitials() ?: "#"
 
             row.messageBubble.removeAllViewsInLayout()
             if (messageType == MessageType.SENT)
@@ -182,8 +183,8 @@ class ConversationViewHolder private constructor(private val layout: ViewGroup, 
         row.layout.addView(row.contentLayout)
         row.contentLayout.removeAllViewsInLayout()
 
-        var avatarHolderLeftMargin = 20
-        var avatarHolderRightMargin = 0
+        var avatarLabelLeftMargin = 20
+        var avatarLabelRightMargin = 0
         var layoutGravity = Gravity.END
         var messageBackgroundColor = SENT_MESSAGE_BG_COLOR
         var messageFontColor = SENT_MESSAGE_FG_COLOR
@@ -192,9 +193,9 @@ class ConversationViewHolder private constructor(private val layout: ViewGroup, 
 
         if (messageType == MessageType.RECEIVED)
         {
-            val tmp = avatarHolderLeftMargin
-            avatarHolderLeftMargin = avatarHolderRightMargin
-            avatarHolderRightMargin = tmp
+            val tmp = avatarLabelLeftMargin
+            avatarLabelLeftMargin = avatarLabelRightMargin
+            avatarLabelRightMargin = tmp
 
             layoutGravity = Gravity.START
 
@@ -204,7 +205,7 @@ class ConversationViewHolder private constructor(private val layout: ViewGroup, 
             if (numParticipants > 1)
             {
                 row.contentLayout.addView(row.addressLabel)
-                row.layout.addView(row.avatarHolder, 0)
+                row.layout.addView(row.avatarLabel, 0)
             }
         }
 
@@ -216,9 +217,9 @@ class ConversationViewHolder private constructor(private val layout: ViewGroup, 
         val contentLayoutParams = row.contentLayout.layoutParams as LinearLayout.LayoutParams
         contentLayoutParams.weight = contentWeight
 
-        val avatarHolderLayoutParams = row.avatarHolder.layoutParams as ViewGroup.MarginLayoutParams
-        avatarHolderLayoutParams.leftMargin = avatarHolderLeftMargin
-        avatarHolderLayoutParams.rightMargin = avatarHolderRightMargin
+        val avatarLabelLayoutParams = row.avatarLabel.layoutParams as ViewGroup.MarginLayoutParams
+        avatarLabelLayoutParams.leftMargin = avatarLabelLeftMargin
+        avatarLabelLayoutParams.rightMargin = avatarLabelRightMargin
 
         row.layout.gravity = layoutGravity
         row.contentLayout.gravity = layoutGravity

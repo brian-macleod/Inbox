@@ -56,4 +56,36 @@ data class Contact(val id: Long?, val address: String?, val displayName: String?
     {
         return 0
     }
+
+    /**
+     * Gets the initials for this contact.
+     *
+     * @return the initials of the contact, or null if this object does not represent a valid
+     *         contact
+     */
+    fun getInitials(): String?
+    {
+        if (displayName == null)
+        {
+            return null
+        }
+
+        val nameList = displayName.split(" ")
+        val numNames = nameList.size
+        if (numNames == 0)
+        {
+            return null
+        }
+
+        val firstInitial = nameList[0][0]
+        return if (nameList.size == 1)
+        {
+            firstInitial.toString()
+        }
+        else
+        {
+            val lastInitial = nameList[numNames - 1][0]
+            firstInitial + lastInitial.toString()
+        }
+    }
 }

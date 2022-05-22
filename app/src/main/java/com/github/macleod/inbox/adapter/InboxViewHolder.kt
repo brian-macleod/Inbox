@@ -18,6 +18,7 @@ import com.github.macleod.inbox.data.model.*
  */
 class InboxViewHolder(view: View): ViewHolder<Conversation?>(view)
 {
+    private val avatarLabel: TextView = view.findViewById(R.id.inbox_item_avatar_label)
     private val participantsLabel: TextView = view.findViewById(R.id.inbox_item_participants_label)
     private val dateLabel: TextView = view.findViewById(R.id.inbox_item_date_label)
     private val snippetContainer: LinearLayout = view.findViewById(R.id.inbox_item_snippet_container)
@@ -34,11 +35,31 @@ class InboxViewHolder(view: View): ViewHolder<Conversation?>(view)
         if (item == null)
         {
             // TODO: Show a loading spinner
-            snippetLabel.text = "[TODO: Loading Spinner]"
+            val loadingMessage = "[TODO: Loading Spinner]"
+            participantsLabel.text = loadingMessage
+            dateLabel.text = loadingMessage
+            snippetLabel.text = loadingMessage
         }
         else
         {
             val dateFormat = SimpleDateFormat("MM/dd/yy")
+
+            val contactList = item.contacts
+
+            avatarLabel.text = if (contactList == null || contactList.isEmpty())
+            {
+                "?"
+            }
+            else if (contactList.size == 1)
+            {
+                val contact = contactList[0]
+                contact.getInitials() ?: "#"
+            }
+            else // if (contactList.size > 1)
+            {
+                contactList.size.toString()
+            }
+
             participantsLabel.text = item.getParticipantLabel()
             dateLabel.text = dateFormat.format(item.date)
 
